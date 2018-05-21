@@ -1,9 +1,9 @@
-package ve572.l1.haoxin;
+package ve572.l1.regina;
 
 import java.net.Socket;
 import java.net.ServerSocket;
-import java.io.DataOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 import static java.lang.System.out;
@@ -53,15 +53,14 @@ public class ClientServerSocket {
     public boolean sendString(String strToSend) {
         boolean success = false;
         try {
-            outData.writeBytes(strToSend);
-            outData.writeByte(0); // send 0 to signal the end of the string
+        	byte[] utf8Bytes = strToSend.getBytes("UTF8");
+            outData.write(utf8Bytes);
             success = true;
         } catch (IOException e) {
             System.out.println("Caught IOException Writing To Socket Stream!");
             System.exit(-1);
         }
         return (success);
-
     }
 
     public String recvString() {
@@ -71,59 +70,49 @@ public class ClientServerSocket {
         String receivedString = "";
         try {
             recByte = inData.readByte();
-            while (recByte != 0) {
+            while (	recByte != ';') {
+                out.print((char)recByte);
                 byteVec.add(recByte);
                 recByte = inData.readByte();
             }
+            out.print((char)recByte);
             byteAry = new byte[byteVec.size()];
             for (int ind = 0; ind < byteVec.size(); ind++) {
                 byteAry[ind] = byteVec.elementAt(ind).byteValue();
             }
-            receivedString = new String(byteAry);
+            receivedString = new String(byteAry, "UTF8");
         } catch (IOException ioe) {
             out.println("ERROR: receiving string from socket");
             System.exit(8);
         }
         return (receivedString);
     }
-
-    public int recvInt() {
-        int recvInt = 0;
+    
+    public boolean sendBinary(byte[] binToSend) {
+    	boolean success = false;
         try {
-            recvInt = inData.readInt();
-        } catch (IOException ioe) {
-            out.println("ERROR: receiving int from socket");
-            System.exit(10);
+            outData.write(binToSend);
+            success = true;
+        } catch (IOException e) {
+            System.out.println("Caught IOException Writing To Socket Stream!");
+            System.exit(-1);
         }
-        return (recvInt);
-    }
-
-    public void sendInt(int inSendInt) {
-        try {
-            outData.writeInt(inSendInt);
-        } catch (IOException ioe) {
-            System.out.println("ERROR: sending int");
-            System.exit(11);
-        }
+        return (success);
     }
     
-    public double recvDouble() {
-        double recvDouble = 0;
+    public Vector<Byte> recvBinary(int size) {
+        Vector<Byte> byteVec = new Vector<Byte>();
+        byte recByte;
+        String receivedString = "";
         try {
-            recvDouble = inData.readDouble();
+        	for (int i = 0; i < size; i++) {
+        		recByte = inData.readByte();
+        		byteVec.add(recByte);
+        	}
         } catch (IOException ioe) {
-            out.println("ERROR: receiving double from socket");
-            System.exit(10);
+            out.println("ERROR: receiving binary from socket");
+            System.exit(8);
         }
-        return (recvDouble);
-    }
-
-    public void sendDouble(double inSendDouble) {
-        try {
-            outData.writeDouble(inSendDouble);
-        } catch (IOException ioe) {
-            System.out.println("ERROR: sending double");
-            System.exit(11);
-        }
+        return (byteVec);
     }
 }
