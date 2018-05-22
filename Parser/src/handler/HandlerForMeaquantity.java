@@ -8,7 +8,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import parserdef.Meaquantity;
-import static java.lang.System.out;
 
 public class HandlerForMeaquantity extends DefaultHandler {
 	private List<Meaquantity> meaquantityList = null;
