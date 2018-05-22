@@ -13,12 +13,13 @@ import org.xml.sax.SAXException;
 import parserdef.Meaquantity;
 import parserdef.Unit;
 import parserdef.Quantity;
+import parserdef.ExternalComponent;
 
 public class test {
 	public static void main(String[] args) {
 		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 	    try {
-	    	String fileName = "decoding.xml";
+	    	String fileName = "validate.xml";
 	    	
 	        SAXParser saxParser = saxParserFactory.newSAXParser();
 	        
@@ -39,6 +40,14 @@ public class test {
 	        List<Quantity> quantityList = handlerQuantity.getQuantity();
 	        for(Quantity quantity : quantityList)
 	            System.out.println(quantity);
+	        
+	        HandlerForExternalComponent handlerExternalComponent = new HandlerForExternalComponent();
+	        saxParser.parse(new File(fileName), handlerExternalComponent);
+	        List<ExternalComponent> externalComponentList = handlerExternalComponent.getExternalComponent();
+	        for(ExternalComponent ext : externalComponentList)
+	            System.out.println(ext);
+	        
+	        
 	        
 	    } catch (ParserConfigurationException | SAXException | IOException e) {
 	        e.printStackTrace();
