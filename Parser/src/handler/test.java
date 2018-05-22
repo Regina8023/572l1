@@ -1,7 +1,7 @@
 package handler;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+//import java.io.IOException;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,7 +47,23 @@ public class test {
 	        for(ExternalComponent ext : externalComponentList)
 	            System.out.println(ext);
 	        
-	        
+	        for(int i = 0; i < externalComponentList.size(); i++) {
+	        	ExternalComponent ext = externalComponentList.get(i);
+	        	String inputFile = ext.getFilenameURL();
+	        	try(InputStream inputStream = new FileInputStream(inputFile);) {
+	        		long fileSize = new File(inputFile).length();
+	        		byte[] allBytes = new byte[8];
+	        		for (int j = 0; j < 8; j++)
+	        			allBytes[j] = (byte)inputStream.read();
+	        		int j = 0;
+	        		long x = 0;
+	        		for ( int shiftBy = 0; shiftBy < 64; shiftBy += 8 ) {
+	        	        x |= ( (long)( allBytes[j] & 0xff ) ) << shiftBy;
+	        	        j++;
+	        	    }
+	        		System.out.println(Double.longBitsToDouble(x));
+	        	}
+	        }
 	        
 	    } catch (ParserConfigurationException | SAXException | IOException e) {
 	        e.printStackTrace();
