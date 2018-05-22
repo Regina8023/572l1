@@ -23,7 +23,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class test {
 	public static List<Data> data = new ArrayList<>();
-	public static Object[][] fromBin = new Object[5000][30];
+	public static Object[][] fromBin = new Object[6000][30];
 	
 	public static String convertBin(byte b[], String dataType, int dataLen) {
 		//System.out.println("!!!!"+dataType);
@@ -71,9 +71,27 @@ public class test {
 	        
 	        int rowNum = 0;
 	        System.out.println("Creating excel");
+	        
+	        Row row = sheet.createRow(rowNum++);
+	        for (int i = 0; i < data.size(); i++) {
+	        	Cell cell = row.createCell(i);
+	        	cell.setCellValue((String)data.get(i).getName());
+	        }
+	        
+	        row = sheet.createRow(rowNum++);
+	        for (int i = 0; i < data.size(); i++) {
+	        	Cell cell = row.createCell(i);
+	        	cell.setCellValue((String)data.get(i).getQuantity());
+	        }
+	        
+	        row = sheet.createRow(rowNum++);
+	        for (int i = 0; i < data.size(); i++) {
+	        	Cell cell = row.createCell(i);
+	        	cell.setCellValue((String)data.get(i).getUnit());
+	        }
 
 	        for (Object[] datatype : datatypes) {
-	            Row row = sheet.createRow(rowNum++);
+	            row = sheet.createRow(rowNum++);
 	            int colNum = 0;
 	            for (Object field : datatype) {
 	                Cell cell = row.createCell(colNum++);
@@ -111,7 +129,7 @@ public class test {
 	public static void main(String[] args) {
 		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 	    try {
-	    	String fileName = "decoding.xml";
+	    	String fileName = "validate.xml";
 	    	
 	        SAXParser saxParser = saxParserFactory.newSAXParser();
 	        
@@ -193,17 +211,19 @@ public class test {
 	        	int dataLen = data.get(i).getDatalen();
 	        	int id = data.get(i).getId();
 	        	try(InputStream inputStream = new FileInputStream(inputFile);) {
-	        		System.out.println("******"+ext.getStart());
+	        		
 	        		FilterInputStream fis = new BufferedInputStream(inputStream);
 	        		int startPos = ext.getStart(), blockSize = ext.getBlocksize();
 	        		int len = ext.getLength(), valueoff = ext.getValueoffset();
 	        		int numPerBlock = ext.getPerblock();
 	        		int numOfData = 0;
-	        		byte[] allBytes = new byte[len + startPos];
-	        		fis.read(allBytes, 0, len + startPos - 1);
+	        		long size = inputStream.available();
+	        		//System.out.println("******"+size);
+	        		byte[] allBytes = new byte[(int)size];
+	        		fis.read(allBytes, 0, (int)size);
 	        		
 	        		int curLen = 0;
-	        		while (curLen + blockSize <= len) {
+	        		while (numOfData < len) {
 	        			int curPos = startPos + curLen + valueoff;
 	        			for (int j = 0; j < numPerBlock; j++) {
 	        				byte[] Bytes = new byte[dataLen];
@@ -211,8 +231,8 @@ public class test {
 	        					Bytes[k-curPos] = allBytes[k];
 	        				//System.out.println("!!!!"+dataType);
 	        				String s = convertBin(Bytes, dataType, dataLen);
-	        				if (curLen < 20)
-	        					System.out.println(s);
+	        				//if (curLen < 20)
+	        				//	System.out.println(s);
 	        				fromBin[numOfData][id-1] = s;
 	        				numOfData++;
 	        			}
@@ -220,6 +240,7 @@ public class test {
 	        		}
 	        		
 	        		data.get(i).setNumber(numOfData);
+	        		System.out.println("*****" + numOfData);
 	        	}
 	        }
 	        exportToXlsx(fromBin);
