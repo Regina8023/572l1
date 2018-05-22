@@ -3,7 +3,6 @@ package handler;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -17,9 +16,14 @@ import parserdef.Quantity;
 import parserdef.ExternalComponent;
 import handler.Data;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 public class test {
 	public static List<Data> data = new ArrayList<>();
-	public static Object[][] fromBin = new Object[30][5000];
+	public static Object[][] fromBin = new Object[5000][30];
 	
 	public static String convertBin(byte b[], String dataType, int dataLen) {
 		//System.out.println("!!!!"+dataType);
@@ -60,11 +64,54 @@ public class test {
 		return "";
 	}
 	
+	public static boolean exportToXlsx(Object[][] datatypes) {
+		try {
+			XSSFWorkbook workbook = new XSSFWorkbook();
+	        XSSFSheet sheet = workbook.createSheet("Datatypes in Java");
+	        
+	        int rowNum = 0;
+	        System.out.println("Creating excel");
+
+	        for (Object[] datatype : datatypes) {
+	            Row row = sheet.createRow(rowNum++);
+	            int colNum = 0;
+	            for (Object field : datatype) {
+	                Cell cell = row.createCell(colNum++);
+	                if (field instanceof String) {
+	                    cell.setCellValue((String) field);
+	                } else if (field instanceof Integer) {
+	                    cell.setCellValue((Integer) field);
+	                }
+	            }
+	        }
+
+	        try {
+	        	File file = new File("output.xlsx");
+				// if file doesn't exists, then create it
+				if (!file.exists()) {
+					file.createNewFile();
+				}
+	            FileOutputStream outputStream = new FileOutputStream(file);
+	            workbook.write(outputStream);
+	            workbook.close();
+	        } catch (FileNotFoundException e) {
+	            e.printStackTrace();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+
+	        System.out.println("Done");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 	
 	public static void main(String[] args) {
 		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 	    try {
-	    	String fileName = "validate.xml";
+	    	String fileName = "decoding.xml";
 	    	
 	        SAXParser saxParser = saxParserFactory.newSAXParser();
 	        
@@ -152,8 +199,8 @@ public class test {
 	        		int len = ext.getLength(), valueoff = ext.getValueoffset();
 	        		int numPerBlock = ext.getPerblock();
 	        		int numOfData = 0;
-	        		byte[] allBytes = new byte[ext.getLength() + startPos];
-	        		fis.read(allBytes, 0, ext.getLength() + startPos - 1);
+	        		byte[] allBytes = new byte[len + startPos];
+	        		fis.read(allBytes, 0, len + startPos - 1);
 	        		
 	        		int curLen = 0;
 	        		while (curLen + blockSize <= len) {
@@ -166,7 +213,7 @@ public class test {
 	        				String s = convertBin(Bytes, dataType, dataLen);
 	        				if (curLen < 20)
 	        					System.out.println(s);
-	        				fromBin[id][numOfData] = s;
+	        				fromBin[numOfData][id-1] = s;
 	        				numOfData++;
 	        			}
 	        			curLen += blockSize;
@@ -175,7 +222,7 @@ public class test {
 	        		data.get(i).setNumber(numOfData);
 	        	}
 	        }
-	        
+	        exportToXlsx(fromBin);
 	    } catch (ParserConfigurationException | SAXException | IOException e) {
 	        e.printStackTrace();
 	    }
