@@ -7,6 +7,8 @@ public class MyClient {
     public final static int port = 45000;
 
     public static void main(String args[]) {
+    	
+    	
         ClientServerSocket theClient;
         theClient = new ClientServerSocket(IP, port);
         theClient.startClient();
