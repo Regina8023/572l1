@@ -43,17 +43,22 @@ public class HandlerForQuantity extends DefaultHandler {
         	if (quantity.getName() != null)
         		quantityList.add(quantity);
             inQuantity = false;
-        }
+        } else if (qName.equalsIgnoreCase("Name")) {
+			if (inQuantity)
+				bName = false;
+		} else if (qName.equalsIgnoreCase("Id")) {
+			if (inQuantity)
+				bId = false;
+		} 
     }
 	
 	@Override
     public void characters(char ch[], int start, int length) throws SAXException {
 		if (bName) {
-			quantity.setName(new String(ch, start, length));
-			bName = false;
+			String temp = quantity.getName();
+			quantity.setName(temp==null?new String(ch, start, length):temp+new String(ch, start, length));
 		} else if (bId) {
 			quantity.setId(Integer.parseInt(new String(ch, start, length)));
-			bId = false;
 		}
 	}
 }

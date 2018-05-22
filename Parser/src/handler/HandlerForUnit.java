@@ -43,17 +43,22 @@ public class HandlerForUnit extends DefaultHandler {
         	if (unit.getName() != null)
         		unitList.add(unit);
             inUnit = false;
-        }
+        } else if (qName.equalsIgnoreCase("Name")) {
+			if (inUnit)
+				bName = false;
+		} else if (qName.equalsIgnoreCase("Id")) {
+			if (inUnit)
+				bId = false;
+		} 
     }
 	
 	@Override
     public void characters(char ch[], int start, int length) throws SAXException {
 		if (bName) {
-			unit.setName(new String(ch, start, length));
-			bName = false;
+			String temp = unit.getName();
+			unit.setName(temp==null?new String(ch, start, length):temp+new String(ch, start, length));
 		} else if (bId) {
 			unit.setId(Integer.parseInt(new String(ch, start, length)));
-			bId = false;
 		}
 	}
 }

@@ -65,32 +65,47 @@ public class HandlerForExternalComponent extends DefaultHandler {
         		externalComponentList.add(ext);
         	} 		
             inExternalComponent = false;
-        }
+        } else if (qName.equalsIgnoreCase("FilenameURL")) {
+			if (inExternalComponent)
+				bFilenameURL = false;
+		} else if (qName.equalsIgnoreCase("Id")) {
+			if (inExternalComponent)
+				bId = false;
+		} else if (qName.equalsIgnoreCase("StartOffset")) {
+			if (inExternalComponent)
+				bStart = false;
+		} else if (qName.equalsIgnoreCase("Blocksize")) {
+			if (inExternalComponent)
+				bBlocksize = false;
+		} else if (qName.equalsIgnoreCase("ValuesPerBlock")) {
+			if (inExternalComponent)
+				bPerblock = false;
+		} else if (qName.equalsIgnoreCase("ValueOffset")) {
+			if (inExternalComponent)
+				bValueoffset = false;
+		} else if (qName.equalsIgnoreCase("Length")) {
+			if (inExternalComponent)
+				bLength = false;
+		}
     }
 	
 	@Override
     public void characters(char ch[], int start, int length) throws SAXException {
 		if (bFilenameURL) {
-			ext.setFilenameURL(new String(ch, start, length));
-			bFilenameURL = false;
+			String temp = ext.getFilenameURL();
+			ext.setFilenameURL(temp==null?new String(ch, start, length):temp+new String(ch, start, length));
 		} else if (bId) {
 			ext.setId(Integer.parseInt(new String(ch, start, length)));
-			bId = false;
 		}  else if (bStart) {
 			ext.setStart(Integer.parseInt(new String(ch, start, length)));
-			bStart = false;
 		} else if (bLength) {
 			ext.setLength(Integer.parseInt(new String(ch, start, length)));
-			bLength = false;
 		} else if (bPerblock) {
 			ext.setPerblock(Integer.parseInt(new String(ch, start, length)));
-			bPerblock = false;
 		} else if (bValueoffset) {
 			ext.setValueoffset(Integer.parseInt(new String(ch, start, length)));
-			bValueoffset = false;
 		} else if (bBlocksize) {
 			ext.setBlocksize(Integer.parseInt(new String(ch, start, length)));
-			bBlocksize = false;
 		}		
 	}
 }

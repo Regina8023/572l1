@@ -8,6 +8,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import parserdef.Meaquantity;
+import static java.lang.System.out;
 
 public class HandlerForMeaquantity extends DefaultHandler {
 	private List<Meaquantity> meaquantityList = null;
@@ -55,26 +56,38 @@ public class HandlerForMeaquantity extends DefaultHandler {
         	if (mea.getName() != null)
         		meaquantityList.add(mea);
             inMeaquantity = false;
-        }
+        } else if (qName.equalsIgnoreCase("Name")) {
+        	if (inMeaquantity)
+				bName= false;
+        }  else if (qName.equalsIgnoreCase("Id")) {
+			if (inMeaquantity)
+				bId = false;
+		} else if (qName.equalsIgnoreCase("DataType")) {
+			if (inMeaquantity)
+				bDatatype = false;
+		} else if (qName.equalsIgnoreCase("Unit")) {
+			if (inMeaquantity)
+				bUnit = false;
+		} else if (qName.equalsIgnoreCase("Quantity")) {
+			if (inMeaquantity)
+				bQuantity = false;
+		}
     }
 	
 	@Override
     public void characters(char ch[], int start, int length) throws SAXException {
 		if (bName) {
-			mea.setName(new String(ch, start, length));
-			bName = false;
+			String temp = mea.getName();
+			mea.setName(temp==null?new String(ch, start, length):temp+new String(ch, start, length));
 		} else if (bId) {
 			mea.setId(Integer.parseInt(new String(ch, start, length)));
-			bId = false;
 		} else if (bDatatype) {
-			mea.setDatatype(new String(ch, start, length));
-			bDatatype = false;
+			String temp = mea.getDatatype();
+			mea.setDatatype(temp==null?new String(ch, start, length):temp+new String(ch, start, length));
 		} else if (bUnit) {
 			mea.setUnit(Integer.parseInt(new String(ch, start, length)));
-			bUnit = false;
 		} else if (bQuantity) {
 			mea.setQuantity(Integer.parseInt(new String(ch, start, length)));
-			bQuantity = false;
 		} 
 	}
 }
