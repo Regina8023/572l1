@@ -40,6 +40,22 @@ public class test {
 				j++;
 			}
 			return Long.toString(x);
+		} else if (dataType.equals("DT_FLOAT")) {
+			int j = 0;
+			int x = 0;
+			for ( int shiftBy = 0; shiftBy < 32; shiftBy += 8 ) {
+				x |= ( (int)( b[j] & 0xFF ) ) << shiftBy;
+				j++;
+			}
+			return String.valueOf(Float.intBitsToFloat(x));
+		} else if (dataType.equals("DT_SHORT")) {
+			int j = 0;
+			long x = 0;
+			for ( int shiftBy = 0; shiftBy < 16; shiftBy += 8 ) {
+				x |= ( (long)( b[j] & 0xFF ) ) << shiftBy;
+				j++;
+			}
+			return String.valueOf((short)x);
 		}
 		return "";
 	}
@@ -48,7 +64,7 @@ public class test {
 	public static void main(String[] args) {
 		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 	    try {
-	    	String fileName = "decoding.xml";
+	    	String fileName = "validate.xml";
 	    	
 	        SAXParser saxParser = saxParserFactory.newSAXParser();
 	        
