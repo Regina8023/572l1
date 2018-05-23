@@ -23,9 +23,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class test {
 	public static List<Data> data = new ArrayList<>();
-	public static Object[][] fromBin = new Object[5000][30];
+	public static Object[][] fromBin = new Object[6000][30];
 	
-	public static String convertBin(byte b[], String dataType, int dataLen) {
+	public static String convertBin(byte b[], String dataType, int dataLen, int i) {
 		//System.out.println("!!!!"+dataType);
 		if (dataType.equals("DT_DOUBLE")) {
 			//System.out.println("???");
@@ -35,6 +35,7 @@ public class test {
 				x |= ( (long)( b[j] & 0xff ) ) << shiftBy;
 				j++;
 			}
+			data.get(i).HandleData(Double.longBitsToDouble(x));
 			return String.valueOf(Double.longBitsToDouble(x));
 		} else if (dataType.equals("DT_LONG")) {
 			int j = 0;
@@ -43,6 +44,7 @@ public class test {
 				x |= ( (long)( b[j] & 0xFFL ) ) << shiftBy;
 				j++;
 			}
+			data.get(i).HandleData(x);
 			return Long.toString(x);
 		} else if (dataType.equals("DT_FLOAT")) {
 			int j = 0;
@@ -51,6 +53,7 @@ public class test {
 				x |= ( (int)( b[j] & 0xFF ) ) << shiftBy;
 				j++;
 			}
+			data.get(i).HandleData(Float.intBitsToFloat(x));
 			return String.valueOf(Float.intBitsToFloat(x));
 		} else if (dataType.equals("DT_SHORT")) {
 			int j = 0;
@@ -59,6 +62,7 @@ public class test {
 				x |= ( (long)( b[j] & 0xFF ) ) << shiftBy;
 				j++;
 			}
+			data.get(i).HandleData((short)x);
 			return String.valueOf((short)x);
 		}
 		return "";
@@ -71,17 +75,36 @@ public class test {
 	        
 	        int rowNum = 0;
 	        System.out.println("Creating excel");
-
+	        
+	        Row row = sheet.createRow(rowNum++);
+	        for (int i = 0; i < data.size(); i++) {
+	        	Cell cell = row.createCell(i);
+	        	cell.setCellValue((String)data.get(i).getName());
+	        }
+	        
+	        row = sheet.createRow(rowNum++);
+	        for (int i = 0; i < data.size(); i++) {
+	        	Cell cell = row.createCell(i);
+	        	cell.setCellValue((String)data.get(i).getQuantity());
+	        }
+	        
+	        row = sheet.createRow(rowNum++);
+	        for (int i = 0; i < data.size(); i++) {
+	        	Cell cell = row.createCell(i);
+	        	cell.setCellValue((String)data.get(i).getUnit());
+	        }
+	        boolean flag = true;
 	        for (Object[] datatype : datatypes) {
-	            Row row = sheet.createRow(rowNum++);
+	            row = sheet.createRow(rowNum++);
 	            int colNum = 0;
 	            for (Object field : datatype) {
 	                Cell cell = row.createCell(colNum++);
-	                if (field instanceof String) {
-	                    cell.setCellValue((String) field);
-	                } else if (field instanceof Integer) {
-	                    cell.setCellValue((Integer) field);
-	                }
+	                if (flag && colNum==1 && field==null) {
+	                	flag = false;
+	                	System.out.println(rowNum);
+	                }	             
+	                if (field != null)
+	                	cell.setCellValue(Double.parseDouble((String)field));	               
 	            }
 	        }
 
@@ -94,6 +117,7 @@ public class test {
 	            FileOutputStream outputStream = new FileOutputStream(file);
 	            workbook.write(outputStream);
 	            workbook.close();
+	            outputStream.close();
 	        } catch (FileNotFoundException e) {
 	            e.printStackTrace();
 	        } catch (IOException e) {
@@ -147,7 +171,23 @@ public class test {
 	        //Construct data class for each series
 	        for (int i = 0; i < meaquantityList.size(); i++) {
 	        	Meaquantity mea = meaquantityList.get(i);
-	        	Data d = new Data();
+	        	Data d;
+	        	switch (mea.getDatatype()) {
+	        	case "DT_DOUBLE":
+	        		d = new Data<Double>();
+	        		break;
+	        	case "DT_LONG":
+	        		d = new Data<Long>();
+	        		break;
+	        	case "DT_FLOAT":
+	        		d = new Data<Float>();
+	        		break;
+	        	case "DT_SHORT":
+	        		d = new Data<Short>();
+	        		break;
+	        	default:
+	        		throw new IllegalArgumentException("Invalid data type: "+mea.getDatatype());
+	        	}
 	        	d.setName(mea.getName());
 	        	d.setId(mea.getId());
 	        	d.setDatatype(mea.getDatatype());
@@ -191,36 +231,34 @@ public class test {
 	        	String inputFile = ext.getFilenameURL();
 	        	String dataType = data.get(i).getDatatype();
 	        	int dataLen = data.get(i).getDatalen();
-	        	int id = data.get(i).getId();
-	        	try(InputStream inputStream = new FileInputStream(inputFile);) {
-	        		System.out.println("******"+ext.getStart());
-	        		FilterInputStream fis = new BufferedInputStream(inputStream);
-	        		int startPos = ext.getStart(), blockSize = ext.getBlocksize();
-	        		int len = ext.getLength(), valueoff = ext.getValueoffset();
-	        		int numPerBlock = ext.getPerblock();
-	        		int numOfData = 0;
-	        		byte[] allBytes = new byte[len + startPos];
-	        		fis.read(allBytes, 0, len + startPos - 1);
-	        		
-	        		int curLen = 0;
-	        		while (curLen + blockSize <= len) {
-	        			int curPos = startPos + curLen + valueoff;
-	        			for (int j = 0; j < numPerBlock; j++) {
-	        				byte[] Bytes = new byte[dataLen];
-	        				for (int k = curPos; k < curPos + dataLen; k++)
-	        					Bytes[k-curPos] = allBytes[k];
-	        				//System.out.println("!!!!"+dataType);
-	        				String s = convertBin(Bytes, dataType, dataLen);
-	        				if (curLen < 20)
-	        					System.out.println(s);
-	        				fromBin[numOfData][id-1] = s;
-	        				numOfData++;
-	        			}
-	        			curLen += blockSize;
-	        		}
-	        		
-	        		data.get(i).setNumber(numOfData);
-	        	}
+				int id = data.get(i).getId();
+				
+				InputStream inputStream = new FileInputStream(inputFile);
+				FilterInputStream fis = new BufferedInputStream(inputStream);
+				int startPos = ext.getStart(), blockSize = ext.getBlocksize();
+				int len = ext.getLength(), valueoff = ext.getValueoffset();
+				int numPerBlock = ext.getPerblock();
+				int numOfData = 0;
+				long size = inputStream.available();
+				byte[] allBytes = new byte[(int) size];
+				fis.read(allBytes, 0, (int) size);
+				fis.close();
+				int curLen = 0;
+				while (numOfData < len) {
+					int curPos = startPos + curLen + valueoff;
+					for (int j = 0; j < numPerBlock; j++) {
+						byte[] Bytes = new byte[dataLen];
+						for (int k = curPos; k < curPos + dataLen; k++)
+							Bytes[k - curPos] = allBytes[k];
+						String s = convertBin(Bytes, dataType, dataLen, i);
+						fromBin[numOfData][id - 1] = s;
+						numOfData++;
+					}
+					curLen += blockSize;
+				}
+				assert(data.get(i).getNumber()==numOfData);
+				System.out.println("*****" + numOfData+" MAX:"+data.get(i).getMax()+" MIN:"+data.get(i).getMin()
+						+" Med:"+data.get(i).getMed()+" Sum:"+data.get(i).getSum()+" Avg:"+data.get(i).getAvg());
 	        }
 	        exportToXlsx(fromBin);
 	    } catch (ParserConfigurationException | SAXException | IOException e) {
