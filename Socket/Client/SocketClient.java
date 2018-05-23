@@ -3,7 +3,7 @@ import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 
 public class SocketClient {
-    public final static String host = "192.168.137.1";
+    public final static String host = "10.162.180.167";
     public final static int port = 9090;
     public final static String xml_file = "decoding.xml";
     public final static String bin_file = "data_1.bin";
@@ -15,34 +15,25 @@ public class SocketClient {
             System.out.println("Unnable to build connetction.");
             System.exit(0);
         }
-        PrintWriter output =
-            new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
         BufferedReader input =
             new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-        
-        output.print("BEGIN;");
-        output.flush();
-        output.print("SIZE XML 17055;");
-        output.flush();
-        SendFile(xml_file, socket.getOutputStream());
-        output.flush();
-        TimeUnit.SECONDS.sleep(2);
-        output.print("SIZE XML 17055;");
-        output.flush();
-        SendFile(xml_file, socket.getOutputStream());
-        output.flush();
-        TimeUnit.SECONDS.sleep(2);        
-        output.print("SIZE BIN 252084;");
-        output.flush();
-        SendFile(bin_file, socket.getOutputStream());
-        output.flush();
-        TimeUnit.SECONDS.sleep(2);
-        output.print("QUERY MAX startTime;");
-        output.flush();
-        output.print("QUERY AVG totalLength;");
-        output.flush();
-        output.print("END;");
-        output.flush();
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        dos.writeBytes("BEGIN;");
+        dos.flush();
+        dos.writeBytes("SIZE XML 17055;");
+        dos.flush();
+        SendFile(xml_file, dos);
+        dos.flush();
+        dos.writeBytes("SIZE BIN 252084;");
+        dos.flush();
+        SendFile(bin_file, dos);
+        dos.flush();
+        dos.writeBytes("QUERY MAX startTime;");
+        dos.flush();
+        dos.writeBytes("QUERY AVG totalLength;");
+        dos.flush();
+        dos.writeBytes("END;");
+        dos.flush();
         
         String command;
         while ((command = input.readLine()) != null) {
@@ -51,11 +42,10 @@ public class SocketClient {
         socket.close();
         System.exit(0);
     }
-    public static void SendFile(String filename, OutputStream os) throws IOException{
+    public static void SendFile(String filename, DataOutputStream dos) throws IOException{
         File file = new File(filename);
         int size = (int) file.length();
         System.out.println(size);
-        DataOutputStream dos = new DataOutputStream(os);
 		FileInputStream fis = new FileInputStream(file);
 		byte[] buffer = new byte[4096];
         

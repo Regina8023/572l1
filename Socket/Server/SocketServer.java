@@ -17,12 +17,12 @@ public class SocketServer {
                 counter ++;
                 String command;
                 try {
-                    BufferedReader input =
-                        new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+                    DataInputStream dis = new DataInputStream(socket.getInputStream());
                     PrintWriter output =
                         new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
+                    
                     System.out.println("Connection build."); 
-                    while ((command = ReadCommand(input)) != null) {
+                    while ((command = ReadCommand(dis)) != null) {
                         command = command.trim();
                         String[] tokens = ParseParameters(command);
                         if("END".equals(tokens[0])) {
@@ -31,7 +31,7 @@ public class SocketServer {
                             System.out.println("End connection.");
                             break;
                         }
-                        Execute(tokens, socket.getInputStream(), output);
+                        Execute(tokens, dis, output);
                     }
                 } catch(Exception e){
                     e.printStackTrace();
@@ -50,10 +50,10 @@ public class SocketServer {
             listener.close();
         }
     }
-    public static String ReadCommand(BufferedReader input) throws IOException{
+    public static String ReadCommand(DataInputStream dis) throws IOException{
         String command = "";
         int r;
-        while((r = input.read()) != -1){
+        while((r = dis.readByte()) != -1){
             char next = (char) r;
             if(r == ';') {
                 return command;
@@ -74,7 +74,7 @@ public class SocketServer {
         System.out.println("");        
         return tokens;
     }
-    public static void Execute(String[] args, InputStream is, PrintWriter output) {
+    public static void Execute(String[] args, DataInputStream dis, PrintWriter output) {
         if(args[0] == null) {
             output.println("Invalid input.");
             return;
@@ -87,10 +87,10 @@ public class SocketServer {
             output.println("OK");
             try {
                 if ("XML".equals(args[1])) {
-                    RecieveFile(xml_file, is, Integer.valueOf(args[2]).intValue());
+                    RecieveFile(xml_file, dis, Integer.valueOf(args[2]).intValue());
                 }
                 else if ("BIN".equals(args[1])) {
-                    RecieveFile(bin_file, is, Integer.valueOf(args[2]).intValue());
+                    RecieveFile(bin_file, dis, Integer.valueOf(args[2]).intValue());
                 }
                 else {
                     output.println("Invalid input.");
@@ -113,10 +113,9 @@ public class SocketServer {
             return;
         }
     }
-    public static void RecieveFile(String filename, InputStream is, int size) throws IOException{
+    public static void RecieveFile(String filename, DataInputStream dis, int size) throws IOException{
         File file = new File(filename);
         if(!file.exists()) file.createNewFile();
-        DataInputStream dis = new DataInputStream(is);
 		FileOutputStream fos = new FileOutputStream(file);
         System.out.println("Start recieving file.");
         byte[] buffer = new byte[4096];
