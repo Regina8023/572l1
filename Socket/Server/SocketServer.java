@@ -101,7 +101,12 @@ public class SocketServer {
             return;
         }
         else if ("QUERY".equals(args[0])) {
+            // FIXME:
+            // eg. args[1] = MAX; args[2] =startTime
+            // output String result
             output.println("OK");
+            result = "RESULT startTime OF Time 75 ms FROM 42 POINTS";
+            output.println(result);
             return;
         }
         else if ("END".equals(args[0])) {
