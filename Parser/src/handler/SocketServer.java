@@ -93,14 +93,14 @@ public class SocketServer {
             return;
         }
         else if ("SIZE".equals(args[0])) {
-            output.println("OK");
+            output.println("OK"); 
             try {
                 if ("XML".equals(args[1])) {
                     RecieveFile(xml_file, dis, Integer.valueOf(args[2]).intValue());
                 }
                 else if ("BIN".equals(args[1])) {
                     RecieveFile(bin_file, dis, Integer.valueOf(args[2]).intValue());
-                    output.println("!!!!!!" + args[1]);
+                    //output.println("!!!!!!" + args[1]);
                     data = test.Query("decoding.xml");
                 }
                 else {
