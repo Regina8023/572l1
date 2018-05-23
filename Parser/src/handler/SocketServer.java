@@ -1,12 +1,21 @@
-// SocketServer
-import java.io.*;
+package handler;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 
+//import com.sun.tools.javac.util.List;
+	
 public class SocketServer {
     public final static int port = 9090;
     public final static String xml_file = "decoding.xml";
     public final static String bin_file = "data_1.bin";
+    public static List<Data> data;
     public static void main(String[] args) throws IOException {
         ServerSocket listener = new ServerSocket(port);
         int counter = 0;
@@ -16,7 +25,7 @@ public class SocketServer {
                 Socket socket = listener.accept();
                 counter ++;
                 String command;
-                try {
+                try {	
                     DataInputStream dis = new DataInputStream(socket.getInputStream());
                     PrintWriter output =
                         new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
@@ -91,6 +100,8 @@ public class SocketServer {
                 }
                 else if ("BIN".equals(args[1])) {
                     RecieveFile(bin_file, dis, Integer.valueOf(args[2]).intValue());
+                    output.println("!!!!!!" + args[1]);
+                    data = test.Query("decoding.xml");
                 }
                 else {
                     output.println("Invalid input.");
@@ -105,7 +116,26 @@ public class SocketServer {
             // eg. args[1] = MAX; args[2] =startTime
             // output String result
             output.println("OK");
-            result = "RESULT startTime OF Time 75 ms FROM 42 POINTS";
+            int i;
+            for (i = 0; i < data.size(); i++) {
+            	if (data.get(i).getName().equals(args[2]))
+            		break;
+            }
+            String ans = "";
+            Data d = data.get(i);
+            switch(args[1]) {
+            	case ("MAX"):
+            		ans = String.valueOf(d.getMax());break;
+            	case ("MIN"):
+            		ans = String.valueOf(d.getMin());break;
+            	case ("AVG"):
+            		ans = String.valueOf(d.getAvg());break;
+            	case ("SUM"):
+            		ans = String.valueOf(d.getSum());break;
+            	case ("MEDIAN"):
+            		ans = String.valueOf(d.getMed());break;
+            }
+            String result = "RESULT " + args[2] + " OF " + d.getQuantity() + " " + ans + " " + d.getUnit() + " FROM " + d.getNumber() + " POINTS";
             output.println(result);
             return;
         }

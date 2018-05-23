@@ -1,12 +1,13 @@
+package handler;
 import java.io.*;
 import java.net.Socket;
-import java.util.concurrent.TimeUnit;
+//import java.util.concurrent.TimeUnit;
 
 public class SocketClient {
-    public final static String host = "10.162.180.167";
+    public final static String host = "127.0.0.1";
     public final static int port = 9090;
-    public final static String xml_file = "decoding.xml";
-    public final static String bin_file = "data_1.bin";
+    public final static String xml_file = "Parser/decoding.xml";
+    public final static String bin_file = "Parser/data_1.bin";
     public static void main(String[] args) throws IOException,InterruptedException {
         Socket socket = null;
         try {
@@ -28,9 +29,9 @@ public class SocketClient {
         dos.flush();
         SendFile(bin_file, dos);
         dos.flush();
-        dos.writeBytes("QUERY MAX startTime;");
+        dos.writeBytes("QUERY MAX CHANNEL05;");
         dos.flush();
-        dos.writeBytes("QUERY AVG totalLength;");
+        dos.writeBytes("QUERY AVG CHANNEL02;");
         dos.flush();
         dos.writeBytes("END;");
         dos.flush();

@@ -1,1 +1,0 @@
-Please change IP address in SocketClient.java

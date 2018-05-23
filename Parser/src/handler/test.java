@@ -132,11 +132,9 @@ public class test {
 		}
 	}
 	
-	public static void main(String[] args) {
+	public static List<Data> Query(String fileName) {
 		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 	    try {
-	    	String fileName = "decoding.xml";
-	    	
 	        SAXParser saxParser = saxParserFactory.newSAXParser();
 	        
 	        //Parse information from xml	        
@@ -253,16 +251,18 @@ public class test {
 						String s = convertBin(Bytes, dataType, dataLen, i);
 						fromBin[numOfData][id - 1] = s;
 						numOfData++;
+						curPos += dataLen;
 					}
 					curLen += blockSize;
 				}
-				assert(data.get(i).getNumber()==numOfData);
-				System.out.println("*****" + numOfData+" MAX:"+data.get(i).getMax()+" MIN:"+data.get(i).getMin()
-						+" Med:"+data.get(i).getMed()+" Sum:"+data.get(i).getSum()+" Avg:"+data.get(i).getAvg());
+				//assert(data.get(i).getNumber()==numOfData);
+				//System.out.println("*****" + numOfData+" MAX:"+data.get(i).getMax()+" MIN:"+data.get(i).getMin()
+				//		+" Med:"+data.get(i).getMed()+" Sum:"+data.get(i).getSum()+" Avg:"+data.get(i).getAvg());
 	        }
 	        exportToXlsx(fromBin);
 	    } catch (ParserConfigurationException | SAXException | IOException e) {
 	        e.printStackTrace();
 	    }
+	    return data;
 	}
 }
