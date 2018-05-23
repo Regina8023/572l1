@@ -1,11 +1,48 @@
 package handler;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+
 import parserdef.ExternalComponent;
 
-public class Data {
+public class Data<T extends Number & Comparable<T>> {
 	private ExternalComponent e;
-	private int id, start, end, number, datalen;
+	private int id, start, end, number=0, datalen;
 	private String name, unit, datatype, quantity;
+	private T max, min;
+	private double sum;
+	private PriorityQueue<T> maxHeap = new PriorityQueue<T>(new Comparator<T>() {  
+	    @Override  
+	    public int compare(T o1, T o2) {  
+	        return o2.compareTo(o1);  
+	    }    
+	});
+    private PriorityQueue<T> minHeap = new PriorityQueue<T>();
+    private boolean isFirst = true;
 	
+    public void HandleData(T data) {
+    	if (isFirst) {
+    		max = data;
+    		min = data;
+    		minHeap.offer(data);
+    		sum += data.doubleValue();
+    		number++;
+    		isFirst = false;
+    	} else {
+    		if (data.compareTo(max) > 0) max = data;
+    		if (data.compareTo(min) < 0) min = data;
+    		if (number % 2 == 0) {
+    			maxHeap.offer(data);
+    			T filteredMaxNum = maxHeap.poll();
+    	        minHeap.offer(filteredMaxNum);
+    		} else {
+    			minHeap.offer(data);
+    	        T filteredMinNum = minHeap.poll();
+    	        maxHeap.offer(filteredMinNum);
+    		}
+    		sum += data.doubleValue();
+    		number++;
+    	}
+    }
 	public ExternalComponent getE() {
 		return e;
 	}
@@ -74,5 +111,20 @@ public class Data {
 	}
 	public void setQuantity(String quantity) {
 		this.quantity = quantity;
+	}
+	public T getMax() {
+		return max;
+	}
+	public T getMin() {
+		return min;
+	}
+	public double getAvg() {
+		return sum/number;
+	}
+	public double getSum() {
+		return sum;
+	}
+	public double getMed() {
+		return (number % 2 == 0)?(minHeap.peek().doubleValue()+maxHeap.peek().doubleValue())/2:minHeap.peek().doubleValue();
 	}
 }

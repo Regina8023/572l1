@@ -103,7 +103,6 @@ public class ClientServerSocket {
     public Vector<Byte> recvBinary(int size) {
         Vector<Byte> byteVec = new Vector<Byte>();
         byte recByte;
-        String receivedString = "";
         try {
         	for (int i = 0; i < size; i++) {
         		recByte = inData.readByte();
