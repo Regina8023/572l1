@@ -68,8 +68,11 @@ public class SocketServer {
         }
         byte[] byteAry = new byte[byteVec.size()];
         int count = 0;
-        for(byte i: byteVec) {byteAry[count++] = i;}
-        return new String(byteAry, "UTF8");
+        for(byte i: byteVec) {byteAry[count++] = i;System.out.print(i+" ");}
+        System.out.println("");
+        String command = new String(byteAry, "utf-8");
+        System.out.println(command);
+        return command;
     }
     public static String[] ParseParameters(String command) {
         
