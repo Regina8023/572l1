@@ -12,7 +12,7 @@ import org.xml.sax.SAXException;
 
 import parserdef.Meaquantity;
 import parserdef.Unit;
-import parserdef.Quantity;
+import parserdef.Phydim;
 import parserdef.ExternalComponent;
 import handler.Data;
 
@@ -146,9 +146,9 @@ public class test {
 	        saxParser.parse(new File(fileName), handlerUnit);
 	        List<Unit> unitList = handlerUnit.getUnit();	        
 	        
-	        HandlerForQuantity handlerQuantity = new HandlerForQuantity();
-	        saxParser.parse(new File(fileName), handlerQuantity);
-	        List<Quantity> quantityList = handlerQuantity.getQuantity();
+	        HandlerForPhydim handlerPhydim = new HandlerForPhydim();
+	        saxParser.parse(new File(fileName), handlerPhydim);
+	        List<Phydim> phydimList = handlerPhydim.getPhydim();
 	        
 	        HandlerForExternalComponent handlerExternalComponent = new HandlerForExternalComponent();
 	        saxParser.parse(new File(fileName), handlerExternalComponent);
@@ -160,8 +160,8 @@ public class test {
 	            System.out.println(mea);
 	        for(Unit unit : unitList)
 	            System.out.println(unit);
-	        for(Quantity quantity : quantityList)
-	            System.out.println(quantity);
+	        for(Phydim phydim : phydimList)
+	            System.out.println(phydim);
 	        for(ExternalComponent ext : externalComponentList)
 	            System.out.println(ext);
 	        
@@ -198,13 +198,13 @@ public class test {
 	        	}
 	        	d.setUnit(u.getName());
 	        	//set quantity
-	        	Quantity q = null;
-	        	for (int j = 0; j < quantityList.size(); j++) {
-	        		q = quantityList.get(j);
-	        		if (q.getId() == mea.getQuantity())
+	        	Phydim p = null;
+	        	for (int k = 0; k < phydimList.size(); k++) {
+	        		p = phydimList.get(k);
+	        		if (p.getId() == u.getPhydim())
 	        			break;
 	        	}
-	        	d.setQuantity(q.getName());
+	        	d.setQuantity(p.getName());
 	        	//set e
 	        	ExternalComponent e = null;
 	        	for (int j = 0; j < externalComponentList.size(); j++) {
@@ -219,7 +219,7 @@ public class test {
 	        //print data information for debugging
 	        /*
 	        for (int i = 0; i < data.size(); i++) {
-	        	System.out.println("For " + i + ": quantity = " + data.get(i).getQuantity());
+	        	System.out.println("For " + i + ": quantity = " + data.get(i).getPhydim());
 	        }
 	        */
 	        

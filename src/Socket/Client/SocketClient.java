@@ -29,9 +29,9 @@ public class SocketClient {
         dos.flush();
         SendFile(bin_file, dos);
         dos.flush();
-        dos.writeBytes("QUERY MAX startTime;");
+        dos.writeBytes("QUERY MAX CHANNEL05;");
         dos.flush();
-        dos.writeBytes("QUERY AVG totalLength;");
+        dos.writeBytes("QUERY AVG CHANNEL08;");
         dos.flush();
         dos.writeBytes("END;");
         dos.flush();

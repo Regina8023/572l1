@@ -20,6 +20,7 @@ public class HandlerForUnit extends DefaultHandler {
 	boolean inUnit = false;
 	boolean bName = false;
 	boolean bId = false;
+	boolean bPhydim = false;
 	
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -34,7 +35,10 @@ public class HandlerForUnit extends DefaultHandler {
 		} else if (qName.equalsIgnoreCase("Id")) {
 			if (inUnit)
 				bId = true;
-		} 
+		} else if (qName.equalsIgnoreCase("PhysDimension")) {
+			if (inUnit)
+				bPhydim = true;
+		}
 	}
 	
 	@Override
@@ -49,7 +53,10 @@ public class HandlerForUnit extends DefaultHandler {
 		} else if (qName.equalsIgnoreCase("Id")) {
 			if (inUnit)
 				bId = false;
-		} 
+		} else if (qName.equalsIgnoreCase("PhysDimension")) {
+			if (inUnit)
+				bPhydim = false;
+		}
     }
 	
 	@Override
@@ -59,6 +66,8 @@ public class HandlerForUnit extends DefaultHandler {
 			unit.setName(temp==null?new String(ch, start, length):temp+new String(ch, start, length));
 		} else if (bId) {
 			unit.setId(Integer.parseInt(new String(ch, start, length)));
+		} else if (bPhydim) {
+			unit.setPhydim(Integer.parseInt(new String(ch, start, length)));
 		}
 	}
 }

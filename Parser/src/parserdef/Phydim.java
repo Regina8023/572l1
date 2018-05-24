@@ -1,6 +1,6 @@
 package parserdef;
 
-public class Quantity {
+public class Phydim {
 	private int id;
 	private String name;
 	
@@ -19,6 +19,6 @@ public class Quantity {
 	
 	@Override
     public String toString() {
-        return "Quantity:: ID="+this.id+" Name=" + this.name;
+        return "Phydim:: ID="+this.id+" Name=" + this.name;
     }
 }

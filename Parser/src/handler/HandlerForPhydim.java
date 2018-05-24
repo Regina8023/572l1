@@ -7,47 +7,47 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import parserdef.Quantity;
+import parserdef.Phydim;
 
-public class HandlerForQuantity extends DefaultHandler {
-	private List<Quantity> quantityList = null;
-	private Quantity quantity = null;
+public class HandlerForPhydim extends DefaultHandler {
+	private List<Phydim> phydimList = null;
+	private Phydim phydim = null;
 	
-	public List<Quantity> getQuantity() {
-		return quantityList;
+	public List<Phydim> getPhydim() {
+		return phydimList;
 	}
 	
-	boolean inQuantity = false;
+	boolean inPhydim = false;
 	boolean bName = false;
 	boolean bId = false;
 	
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-		if (qName.equalsIgnoreCase("Quantity")) {
-			inQuantity = true;
-			quantity = new Quantity();
-			if (quantityList == null) 
-				quantityList = new ArrayList<>();
+		if (qName.equalsIgnoreCase("PhysDimension")) {
+			inPhydim = true;
+			phydim = new Phydim();
+			if (phydimList == null) 
+				phydimList = new ArrayList<>();
 		} else if (qName.equalsIgnoreCase("Name")) {
-			if (inQuantity)
+			if (inPhydim)
 				bName = true;
 		} else if (qName.equalsIgnoreCase("Id")) {
-			if (inQuantity)
+			if (inPhydim)
 				bId = true;
 		} 
 	}
 	
 	@Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        if (qName.equalsIgnoreCase("Quantity")) {
-        	if (quantity.getName() != null)
-        		quantityList.add(quantity);
-            inQuantity = false;
+        if (qName.equalsIgnoreCase("PhysDimension")) {
+        	if (phydim.getName() != null)
+        		phydimList.add(phydim);
+            inPhydim = false;
         } else if (qName.equalsIgnoreCase("Name")) {
-			if (inQuantity)
+			if (inPhydim)
 				bName = false;
 		} else if (qName.equalsIgnoreCase("Id")) {
-			if (inQuantity)
+			if (inPhydim)
 				bId = false;
 		} 
     }
@@ -55,10 +55,10 @@ public class HandlerForQuantity extends DefaultHandler {
 	@Override
     public void characters(char ch[], int start, int length) throws SAXException {
 		if (bName) {
-			String temp = quantity.getName();
-			quantity.setName(temp==null?new String(ch, start, length):temp+new String(ch, start, length));
+			String temp = phydim.getName();
+			phydim.setName(temp==null?new String(ch, start, length):temp+new String(ch, start, length));
 		} else if (bId) {
-			quantity.setId(Integer.parseInt(new String(ch, start, length)));
+			phydim.setId(Integer.parseInt(new String(ch, start, length)));
 		}
 	}
 }
