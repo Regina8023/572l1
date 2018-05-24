@@ -2,6 +2,7 @@ package Socket.Server;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Vector;
 	
 public class SocketServer {
     public final static int port = 9090;
