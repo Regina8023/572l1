@@ -60,18 +60,15 @@ public class SocketServer {
         }
     }
     public static String ReadCommand(DataInputStream dis) throws IOException{
-        String command = "";
-        int r;
-        while((r = dis.readByte()) != -1){
-            char next = (char) r;
-            if(r == ';') {
-                return command;
-            }
-            if(Character.isLetter(next) || Character.isDigit(next) || Character.isWhitespace(next)){
-                command += next;
-            }
+        Vector<Byte> byteVec = new Vector<Byte>();
+        byte recByte;
+        while (	(recByte = dis.readByte()) != ';') {
+            byteVec.add(recByte);
         }
-        return null;
+        byte[] byteAry = new byte[byteVec.size()];
+        int count = 0;
+        for(byte i: byteVec) {byteAry[count++] = i;}
+        return new String(byteAry, "UTF8");
     }
     public static String[] ParseParameters(String command) {
         
