@@ -134,6 +134,7 @@ public class test {
 	
 	public static List<Data> Query(String fileName) {
 		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+		data.clear();
 	    try {
 	        SAXParser saxParser = saxParserFactory.newSAXParser();
 	        
@@ -255,9 +256,9 @@ public class test {
 					}
 					curLen += blockSize;
 				}
-				//assert(data.get(i).getNumber()==numOfData);
-				//System.out.println("*****" + numOfData+" MAX:"+data.get(i).getMax()+" MIN:"+data.get(i).getMin()
-				//		+" Med:"+data.get(i).getMed()+" Sum:"+data.get(i).getSum()+" Avg:"+data.get(i).getAvg());
+				assert(data.get(i).getNumber()==numOfData);
+				System.out.println("*****" + data.get(i).getNumber()+" MAX:"+data.get(i).getMax()+" MIN:"+data.get(i).getMin()
+						+" Med:"+data.get(i).getMed()+" Sum:"+data.get(i).getSum()+" Avg:"+data.get(i).getAvg());
 	        }
 	        exportToXlsx(fromBin);
 	    } catch (ParserConfigurationException | SAXException | IOException e) {
