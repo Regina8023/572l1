@@ -14,8 +14,8 @@ import java.util.Vector;
 	
 public class SocketServer {
     public final static int port = 9090;
-    public final static String xml_file = "decoding.xml";
-    public final static String bin_file = "data_1.bin";
+    public final static String xml_file = "validate.xml";
+    public final static String bin_file = "validate.bin";
     public static List<Data> data;
     public static void main(String[] args) throws IOException {
         ServerSocket listener = new ServerSocket(port);
@@ -70,7 +70,7 @@ public class SocketServer {
         int count = 0;
         for(byte i: byteVec) {byteAry[count++] = i;System.out.print(i+" ");}
         System.out.println("");
-        String command = new String(byteAry, "utf-8");
+        String command = new String(byteAry);
         System.out.println(command);
         return command;
     }
@@ -103,6 +103,7 @@ public class SocketServer {
                     RecieveFile(bin_file, dis, Integer.valueOf(args[2]).intValue());
                     //output.println("!!!!!!" + args[1]);
                     data = test.Query("decoding.xml");
+                    output.println("@@@"+data.get(0).getNumber());
                 }
                 else {
                     output.println("Invalid input.");

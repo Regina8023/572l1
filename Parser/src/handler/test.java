@@ -1,29 +1,36 @@
 package handler;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.xml.sax.SAXException;
-
-import parserdef.Meaquantity;
-import parserdef.Unit;
-import parserdef.Phydim;
-import parserdef.ExternalComponent;
-import handler.Data;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.xml.sax.SAXException;
+
+import parserdef.ExternalComponent;
+import parserdef.Meaquantity;
+import parserdef.Phydim;
+import parserdef.Unit;
 
 public class test {
 	public static List<Data> data = new ArrayList<>();
-	public static Object[][] fromBin = new Object[6000][30];
+	public static Vector< Vector<Object> > fromBin = new Vector< Vector<Object>>();
+	
 	
 	public static String convertBin(byte b[], String dataType, int dataLen, int i) {
 		//System.out.println("!!!!"+dataType);
@@ -68,7 +75,7 @@ public class test {
 		return "";
 	}
 	
-	public static boolean exportToXlsx(Object[][] datatypes) {
+	public static boolean exportToXlsx(Vector<Vector<Object> > datatypes) {
 		try {
 			XSSFWorkbook workbook = new XSSFWorkbook();
 	        XSSFSheet sheet = workbook.createSheet("Datatypes in Java");
@@ -94,7 +101,7 @@ public class test {
 	        	cell.setCellValue((String)data.get(i).getUnit());
 	        }
 	        boolean flag = true;
-	        for (Object[] datatype : datatypes) {
+	        for (Vector<Object> datatype : datatypes) {
 	            row = sheet.createRow(rowNum++);
 	            int colNum = 0;
 	            for (Object field : datatype) {
@@ -226,6 +233,7 @@ public class test {
 	        
 	        //read data from bin and store in a vector
 	        for(int i = 0; i < data.size(); i++) {
+	        	Vector<Object> temp = new Vector<Object>();
 	        	ExternalComponent ext = data.get(i).getE();
 	        	String inputFile = ext.getFilenameURL();
 	        	String dataType = data.get(i).getDatatype();
@@ -250,12 +258,13 @@ public class test {
 						for (int k = curPos; k < curPos + dataLen; k++)
 							Bytes[k - curPos] = allBytes[k];
 						String s = convertBin(Bytes, dataType, dataLen, i);
-						fromBin[numOfData][id - 1] = s;
+						temp.add(s);
 						numOfData++;
 						curPos += dataLen;
 					}
 					curLen += blockSize;
 				}
+				fromBin.add(temp);
 				assert(data.get(i).getNumber()==numOfData);
 				System.out.println("*****" + data.get(i).getNumber()+" MAX:"+data.get(i).getMax()+" MIN:"+data.get(i).getMin()
 						+" Med:"+data.get(i).getMed()+" Sum:"+data.get(i).getSum()+" Avg:"+data.get(i).getAvg());

@@ -6,8 +6,8 @@ import java.net.Socket;
 public class SocketClient {
     public final static String host = "127.0.0.1";
     public final static int port = 9090;
-    public final static String xml_file = "../validate.xml";
-    public final static String bin_file = "../validate.bin";
+    public final static String xml_file = "/Users/haoxin/Documents/JI/VE572/Lab/l1/validate.xml";
+    public final static String bin_file = "/Users/haoxin/Documents/JI/VE572/Lab/l1/validate.bin";
     public static void main(String[] args) throws IOException,InterruptedException {
         // System.out.println(System.getProperty("user.dir"));
         Socket socket = null;
