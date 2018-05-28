@@ -13,7 +13,8 @@ The main goal of this lab is to improve the ability to work in an unfamiliar env
 * Search for, find, read, and understand industry specifications;
 * Improve Java programming skills1;
 * Search, find, understand, and code using external Java libraries;
-* Read libraries’ licences and decide of their adequacy for the company; • Find a VPS provider and setup a server;
+* Read libraries’ licences and decide of their adequacy for the company; 
+* Find a VPS provider and setup a server;
 * Improve socket programming skills;
 * Get more comfortable with command line;
 
