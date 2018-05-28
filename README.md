@@ -24,3 +24,5 @@ Delivery:
 4. Write a Java program to extract data from an XML file: 25%. 
 5. Dump the data from a binary file: 15%.
 6. Complete all the tasks into a remote server application: 10%.
+
+Here is the [specification](https://github.com/yhxlele/572l1/blob/master/l1.pdf).
