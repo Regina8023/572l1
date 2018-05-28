@@ -102,7 +102,7 @@ public class SocketServer {
                 else if ("BIN".equals(args[1])) {
                     RecieveFile(bin_file, dis, Integer.valueOf(args[2]).intValue());
                     //output.println("!!!!!!" + args[1]);
-                    data = test.Query(bin_file);
+                    data = test.Query(xml_file);
                     output.println("@@@"+data.get(0).getNumber());
                 }
                 else {
