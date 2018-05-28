@@ -4,7 +4,7 @@ import java.net.Socket;
 //import java.util.concurrent.TimeUnit;
 
 public class SocketClient {
-    public final static String host = "127.0.0.1";
+    public final static String host = "35.234.28.169";
     public final static int port = 9090;
     public final static String xml_file = "/Users/haoxin/Documents/JI/VE572/Lab/l1/validate.xml";
     public final static String bin_file = "/Users/haoxin/Documents/JI/VE572/Lab/l1/validate.bin";

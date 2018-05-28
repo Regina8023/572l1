@@ -2,3 +2,7 @@
 /class/
 /.metadata/
 .DS_Store
+*.xlsx
+*.xml
+*.bin
+/Parser/bin/
